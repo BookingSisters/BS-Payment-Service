@@ -1,4 +1,4 @@
-package com.bs.ps;
+package com.bs.payment;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
