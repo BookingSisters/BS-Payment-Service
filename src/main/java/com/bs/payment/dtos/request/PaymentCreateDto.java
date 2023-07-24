@@ -17,15 +17,6 @@ import lombok.ToString;
 @ToString
 public class PaymentCreateDto {
 
-    @NotNull(message = "Price must not be null")
-    private Long price;
-
-    @NotNull(message = "Status must not be null")
-    private PaymentStatus status;
-
-    @NotNull(message = "Type must not be null")
-    private PaymentType type;
-
     @NotNull(message = "ReservationId must not be null")
     private Long reservationId;
 
@@ -35,10 +26,8 @@ public class PaymentCreateDto {
     public Payment toEntity(){
         return Payment.builder()
                 .reservationId(this.reservationId)
-                .price(this.price)
                 .userId(this.userId)
-                .status(this.status)
-                .type(this.type)
+                .status(PaymentStatus.PENDING)
                 .build();
     }
 }

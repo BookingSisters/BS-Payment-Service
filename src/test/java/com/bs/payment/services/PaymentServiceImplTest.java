@@ -12,7 +12,8 @@ import com.bs.payment.dtos.request.PaymentCreateDto;
 import com.bs.payment.dtos.response.PaymentGetResponseDto;
 import com.bs.payment.enums.PaymentStatus;
 import com.bs.payment.enums.PaymentType;
-import com.bs.payment.exceptions.ResourceNotFoundException;
+import com.bs.payment.exceptions.badReqeust.PaymentAlreadyExistsException;
+import com.bs.payment.exceptions.badReqeust.ResourceNotFoundException;
 import com.bs.payment.models.Payment;
 import com.bs.payment.repositories.PaymentRepository;
 import java.util.Optional;
@@ -50,9 +51,6 @@ class PaymentServiceImplTest {
     @DisplayName("유효한 결제 PaymentCreateDto가 주어졌을 때, 정상적으로 저장")
     void createPaymentTest() {
         PaymentCreateDto createDto = PaymentCreateDto.builder()
-            .price(200000L)
-            .type(PaymentType.KAKAO_PAY)
-            .status(PaymentStatus.PENDING)
             .reservationId(111L)
             .userId("test")
             .build();
@@ -70,6 +68,21 @@ class PaymentServiceImplTest {
 
         assertThatThrownBy(() -> paymentService.createPayment(createDto))
             .isInstanceOf(NullPointerException.class);
+    }
+
+    @Test
+    @DisplayName("이미 존재하는 결제 데이터가 주어진 경우, PaymentAlreadyExistsException 예외 발생")
+    void createPaymentWithExistingDataTest() {
+
+        PaymentCreateDto createDto = PaymentCreateDto.builder()
+                .reservationId(111L)
+                .userId("test")
+                .build();
+
+        doReturn(true).when(paymentRepository).existsByReservationIdAndUserIdAndIsDeletedFalse(createDto.getReservationId(), createDto.getUserId());
+
+        assertThatThrownBy(() -> paymentService.createPayment(createDto))
+                .isInstanceOf(PaymentAlreadyExistsException.class);
     }
 
     @Test

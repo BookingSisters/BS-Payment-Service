@@ -13,14 +13,13 @@ import com.bs.payment.dtos.request.PaymentCreateDto;
 import com.bs.payment.dtos.response.PaymentGetResponseDto;
 import com.bs.payment.enums.PaymentStatus;
 import com.bs.payment.enums.PaymentType;
-import com.bs.payment.exceptions.ResourceNotFoundException;
+import com.bs.payment.exceptions.badReqeust.ResourceNotFoundException;
 import com.bs.payment.models.Payment;
 import com.bs.payment.services.PaymentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -55,19 +54,16 @@ class PaymentControllerTest {
     void testCreatePayment() throws Exception {
 
         PaymentCreateDto paymentCreateDto = PaymentCreateDto.builder()
-            .reservationId(1L)
-            .price(10000L)
-            .userId("user")
-            .status(PaymentStatus.PENDING)
-            .type(PaymentType.KAKAO_PAY)
-            .build();
+                .reservationId(1L)
+                .userId("user")
+                .build();
 
         doNothing().when(paymentService).createPayment(any(PaymentCreateDto.class));
 
         mockMvc.perform(post("/payments")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(paymentCreateDto)))
-            .andExpect(status().isCreated());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(paymentCreateDto)))
+                .andExpect(status().isCreated());
     }
 
     @Test
@@ -77,12 +73,12 @@ class PaymentControllerTest {
         PaymentCreateDto paymentCreateDto = PaymentCreateDto.builder().build();
 
         doThrow(NullPointerException.class).when(paymentService)
-            .createPayment(any(PaymentCreateDto.class));
+                .createPayment(any(PaymentCreateDto.class));
 
         mockMvc.perform(post("/payments")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(paymentCreateDto)))
-            .andExpect(status().isInternalServerError());
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(paymentCreateDto)))
+                .andExpect(status().isInternalServerError());
     }
 
     @Test
@@ -90,19 +86,19 @@ class PaymentControllerTest {
     void testGetPayment() throws Exception {
 
         PaymentGetResponseDto paymentGetResponseDto = PaymentGetResponseDto.builder()
-            .reservationId(1L)
-            .price(10000L)
-            .userId("user")
-            .status(PaymentStatus.PENDING)
-            .type(PaymentType.KAKAO_PAY)
-            .build();
+                .reservationId(1L)
+                .price(10000L)
+                .userId("user")
+                .status(PaymentStatus.PENDING)
+                .type(PaymentType.KAKAO_PAY)
+                .build();
 
         doReturn(paymentGetResponseDto).when(paymentService).getPaymentById(paymentId);
 
         mockMvc.perform(get("/payments/" + paymentId)
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isOk())
-            .andExpect(jsonPath("$.price").value(paymentGetResponseDto.getPrice()));
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.price").value(paymentGetResponseDto.getPrice()));
     }
 
     @Test
@@ -112,17 +108,17 @@ class PaymentControllerTest {
         doThrow(ResourceNotFoundException.class).when(paymentService).getPaymentById(paymentId);
 
         mockMvc.perform(get("/payments/" + paymentId)
-                .contentType(MediaType.APPLICATION_JSON))
-            .andExpect(status().isBadRequest());
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
     }
 
     private static Payment getPayment() {
         return Payment.builder()
-            .reservationId(1L)
-            .price(10000L)
-            .userId("user")
-            .status(PaymentStatus.PENDING)
-            .type(PaymentType.KAKAO_PAY)
-            .build();
+                .reservationId(1L)
+                .price(10000L)
+                .userId("user")
+                .status(PaymentStatus.PENDING)
+                .type(PaymentType.KAKAO_PAY)
+                .build();
     }
 }
