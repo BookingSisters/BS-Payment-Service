@@ -36,6 +36,9 @@ dependencies {
 
     //modelmapper: 서로 다른 클래스의 값을 한 번에 복사하게 도와주는 라이브러리
     implementation 'org.modelmapper:modelmapper:3.1.1'
+
+    // jasypt for encoding properties
+    implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.5'
 }
 
 tasks.named('test') {
