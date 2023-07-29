@@ -34,28 +34,26 @@ public class Payment extends BaseEntity {
     private Long reservationId;
 
     @Column(nullable=false)
-    private Long price;
+    private String userId;
 
     @Column(nullable=false)
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
 
-    @Column(nullable=false)
     @Enumerated(EnumType.STRING)
     private PaymentType type;
 
-    @Column(nullable=false)
-    private String userId;
+    private Long price;
 
     private LocalDateTime payedAt;
 
     @Builder
-    public Payment(@NonNull final Long reservationId, @NonNull final Long price, @NonNull final PaymentStatus status, @NonNull final PaymentType type, @NonNull final String userId) {
+    public Payment(@NonNull final Long reservationId, @NonNull final String userId, final PaymentStatus status, final PaymentType type, final Long price) {
         this.reservationId = reservationId;
-        this.price = price;
+        this.userId = userId;
         this.status = status;
         this.type = type;
-        this.userId = userId;
+        this.price = price;
     }
 
     public void deletePayment() {

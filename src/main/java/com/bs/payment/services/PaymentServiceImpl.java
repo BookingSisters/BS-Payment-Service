@@ -2,7 +2,8 @@ package com.bs.payment.services;
 
 import com.bs.payment.dtos.request.PaymentCreateDto;
 import com.bs.payment.dtos.response.PaymentGetResponseDto;
-import com.bs.payment.exceptions.ResourceNotFoundException;
+import com.bs.payment.exceptions.badReqeust.PaymentAlreadyExistsException;
+import com.bs.payment.exceptions.badReqeust.ResourceNotFoundException;
 import com.bs.payment.models.Payment;
 import com.bs.payment.repositories.PaymentRepository;
 import lombok.RequiredArgsConstructor;
@@ -27,9 +28,14 @@ public class PaymentServiceImpl implements PaymentService {
 
         log.info("Creating payment with PaymentCreateDto: {}", paymentCreateDto);
 
-        Payment payment = paymentCreateDto.toEntity();
+        Long reservationId = paymentCreateDto.getReservationId();
+        String userId = paymentCreateDto.getUserId();
 
-        paymentRepository.save(payment);
+        if (paymentRepository.existsByReservationIdAndUserIdAndIsDeletedFalse(reservationId, userId)) {
+            throw new PaymentAlreadyExistsException(reservationId, userId);
+        }
+
+        paymentRepository.save(paymentCreateDto.toEntity());
     }
 
     @Override
@@ -55,6 +61,6 @@ public class PaymentServiceImpl implements PaymentService {
 
     private Payment getPayment(Long paymentId) {
         return paymentRepository.findByIdAndIsDeletedFalse(paymentId)
-            .orElseThrow(() -> new ResourceNotFoundException("Payment", String.valueOf(paymentId)));
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", String.valueOf(paymentId)));
     }
 }
