@@ -2,6 +2,7 @@ package com.bs.payment.models;
 
 import com.bs.payment.enums.PaymentStatus;
 import com.bs.payment.enums.PaymentType;
+import com.bs.payment.exceptions.internalServer.InvalidPaymentStatusException;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EntityListeners;
@@ -60,4 +61,13 @@ public class Payment extends BaseEntity {
         this.isDeleted = true;
         this.deletedAt = LocalDateTime.now();
     }
+
+    public void makeComplete() {
+        if (this.status != PaymentStatus.PENDING) {
+            throw new InvalidPaymentStatusException(this.status.toString(), PaymentStatus.COMPLETE.toString());
+        }
+        this.payedAt = LocalDateTime.now();
+        this.status = PaymentStatus.COMPLETE;
+    }
+
 }

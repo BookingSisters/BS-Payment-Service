@@ -8,5 +8,5 @@ public interface PaymentService {
     void createPayment(PaymentCreateDto paymentCreateDto);
     void deletePayment(final Long id);
     PaymentGetResponseDto getPaymentById(Long id);
-
+    void complete(final Long id);
 }

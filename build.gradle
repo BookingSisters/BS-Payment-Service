@@ -41,6 +41,10 @@ dependencies {
 
     // jasypt for encoding properties
     implementation group: 'com.github.ulisesbocchio', name: 'jasypt-spring-boot-starter', version: '3.0.5'
+
+    //aws
+    implementation 'software.amazon.awssdk:scheduler:2.20.103'
+    implementation 'software.amazon.awssdk:eventbridge:2.20.102'
 }
 
 tasks.named('test') {

@@ -12,17 +12,17 @@ import lombok.Setter;
 @Setter
 @Builder
 @AllArgsConstructor
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 public class PaymentGetResponseDto {
 
-    private final Long reservationId;
+    private Long reservationId;
 
-    private final Long price;
+    private Long price;
 
-    private final PaymentStatus status;
+    private PaymentStatus status;
 
-    private final PaymentType type;
+    private PaymentType type;
 
-    private final String userId;
+    private String userId;
 
 }

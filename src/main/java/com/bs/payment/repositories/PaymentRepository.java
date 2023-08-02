@@ -4,8 +4,10 @@ import com.bs.payment.models.Payment;
 
 import java.util.Optional;
 
-import lombok.NonNull;
+import jakarta.persistence.LockModeType;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.repository.query.Param;
 
 public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
@@ -13,4 +15,6 @@ public interface PaymentRepository extends JpaRepository<Payment, Long> {
 
     boolean existsByReservationIdAndUserIdAndIsDeletedFalse(Long reservationId, String userId);
 
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    Optional<Payment> findWithLockingByIdAndIsDeletedFalse(@Param("id") Long id);
 }
