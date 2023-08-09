@@ -1,5 +1,7 @@
 package com.bs.payment.services;
 
+import com.bs.payment.apis.ReservationRestClient;
+import com.bs.payment.apis.SchedulerServiceClient;
 import com.bs.payment.dtos.request.PaymentCreateDto;
 import com.bs.payment.dtos.response.PaymentGetResponseDto;
 import com.bs.payment.exceptions.badReqeust.PaymentAlreadyExistsException;
@@ -19,7 +21,8 @@ import org.springframework.transaction.annotation.Transactional;
 public class PaymentServiceImpl implements PaymentService {
 
     private final ModelMapper modelMapper;
-
+    private final ReservationRestClient reservationRestClient;
+    private final SchedulerServiceClient schedulerServiceClient;
     private final PaymentRepository paymentRepository;
 
     @Override
@@ -59,8 +62,26 @@ public class PaymentServiceImpl implements PaymentService {
         return modelMapper.map(payment, PaymentGetResponseDto.class);
     }
 
+    @Override
+    @Transactional
+    public void completePayment(Long id) {
+
+        log.info("Attempting to change payment status with ID: {}", id);
+
+        Payment payment = paymentRepository.findWithLockingByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Payment", String.valueOf(id)));
+
+        payment.makeComplete();
+
+        reservationRestClient.makeReservationComplete(id);
+
+        schedulerServiceClient.deleteTimeOutSchedule(payment.getReservationId(), payment.getUserId());
+
+    }
+
     private Payment getPayment(Long paymentId) {
         return paymentRepository.findByIdAndIsDeletedFalse(paymentId)
                 .orElseThrow(() -> new ResourceNotFoundException("Payment", String.valueOf(paymentId)));
     }
+
 }

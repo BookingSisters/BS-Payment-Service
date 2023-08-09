@@ -2,6 +2,8 @@ package com.bs.payment.exceptions;
 
 import com.bs.payment.dtos.response.ErrorResultResponseDto;
 import com.bs.payment.exceptions.badReqeust.InvalidValueException;
+import com.bs.payment.exceptions.internalServer.ExternalServiceException;
+import com.bs.payment.exceptions.internalServer.InternalServiceException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -32,6 +34,19 @@ public class GlobalExceptionHandler {
     public ErrorResultResponseDto handleIllegalArgumentException(IllegalArgumentException e) {
         log.error("[IllegalArgumentException] e", e);
         return new ErrorResultResponseDto(HttpStatus.BAD_REQUEST.toString(), e.getMessage());
+    }
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(InternalServiceException.class)
+    public ErrorResultResponseDto handleInternalServiceException(InternalServiceException e) {
+        log.error("[InternalServiceException] ex", e.getMessage());
+        return new ErrorResultResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e.getMessage());
+    }
+
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    @ExceptionHandler(ExternalServiceException.class)
+    public ErrorResultResponseDto handleExternalServiceException(ExternalServiceException e) {
+        log.error("[ExternalServiceException] ex", e.getMessage());
+        return new ErrorResultResponseDto(HttpStatus.INTERNAL_SERVER_ERROR.toString(), e.getMessage());
     }
 
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)

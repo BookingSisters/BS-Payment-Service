@@ -4,10 +4,10 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
+import com.bs.payment.apis.ReservationRestClient;
+import com.bs.payment.apis.SchedulerServiceClient;
 import com.bs.payment.dtos.request.PaymentCreateDto;
 import com.bs.payment.dtos.response.PaymentGetResponseDto;
 import com.bs.payment.enums.PaymentStatus;
@@ -17,6 +17,10 @@ import com.bs.payment.exceptions.badReqeust.ResourceNotFoundException;
 import com.bs.payment.models.Payment;
 import com.bs.payment.repositories.PaymentRepository;
 import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -34,7 +38,10 @@ class PaymentServiceImplTest {
 
     @Mock
     ModelMapper modelMapper;
-
+    @Mock
+    ReservationRestClient reservationRestClient;
+    @Mock
+    SchedulerServiceClient schedulerServiceClient;
     @Mock
     private PaymentRepository paymentRepository;
 
@@ -119,6 +126,30 @@ class PaymentServiceImplTest {
             () -> paymentService.getPaymentById(paymentId));
     }
 
+    @Test
+    @DisplayName("유효한 결제 ID가 주어졌을 때, 결제 상태를 정상적으로 completePayment로 변경")
+    void completePaymentPaymentSuccessTest() {
+
+        doReturn(Optional.of(payment)).when(paymentRepository)
+                .findWithLockingByIdAndIsDeletedFalse(paymentId);
+
+        paymentService.completePayment(paymentId);
+
+        assertEquals(PaymentStatus.COMPLETE, payment.getStatus());
+        verify(paymentRepository).findWithLockingByIdAndIsDeletedFalse(paymentId);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 결제 ID가 주어졌을 때, 결제 상태 변경 시 ResourceNotFoundException 예외 발생")
+    void completePaymentPaymentWithInvalidIdTest() {
+
+        doReturn(Optional.empty()).when(paymentRepository)
+                .findWithLockingByIdAndIsDeletedFalse(paymentId);
+
+        assertThrows(ResourceNotFoundException.class,
+                () -> paymentService.completePayment(paymentId));
+    }
+
     private static Payment getPayment() {
         return Payment.builder()
             .reservationId(1L)
@@ -128,4 +159,5 @@ class PaymentServiceImplTest {
             .type(PaymentType.KAKAO_PAY)
             .build();
     }
+
 }

@@ -20,6 +20,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -103,6 +104,29 @@ class PaymentControllerTest {
         doThrow(ResourceNotFoundException.class).when(paymentService).getPaymentById(paymentId);
 
         mockMvc.perform(get("/payments/" + paymentId)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    @DisplayName("유효한 결제 ID로 결제 상태 업데이트 API 호출 시 성공")
+    void testPaymentCompleteSuccess() throws Exception {
+
+        doNothing().when(paymentService).completePayment(paymentId);
+
+        mockMvc.perform(put("/payments/" + paymentId + "/complete")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.message").value("Payment status updated successfully"));
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 결제 ID로 결제 상태 업데이트 API 호출 시 실패")
+    void testPaymentCompleteFailure() throws Exception {
+
+        doThrow(ResourceNotFoundException.class).when(paymentService).completePayment(paymentId);
+
+        mockMvc.perform(put("/payments/" + paymentId + "/complete")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest());
     }
