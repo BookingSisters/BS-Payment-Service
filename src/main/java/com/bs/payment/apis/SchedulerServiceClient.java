@@ -13,14 +13,12 @@ import software.amazon.awssdk.services.scheduler.model.GetScheduleResponse;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-@Transactional(readOnly = true)
 public class SchedulerServiceClient {
 
     private static final String RESERVATION_PREFIX = "Reservation-";
     private static final String SCHEDULE_SUFFIX = "-time_out_schedule";
     private final SchedulerClient schedulerClient;
 
-    @Transactional
     public void deleteTimeOutSchedule(Long reservationId, String userId) {
 
         log.info("Attempting to delete schedule for reservationId: {}, userId: {}", reservationId, userId);

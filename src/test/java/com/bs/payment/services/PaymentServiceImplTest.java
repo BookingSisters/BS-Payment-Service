@@ -127,13 +127,13 @@ class PaymentServiceImplTest {
     }
 
     @Test
-    @DisplayName("유효한 결제 ID가 주어졌을 때, 결제 상태를 정상적으로 COMPLETE로 변경")
-    void completePaymentSuccessTest() {
+    @DisplayName("유효한 결제 ID가 주어졌을 때, 결제 상태를 정상적으로 completePayment로 변경")
+    void completePaymentPaymentSuccessTest() {
 
         doReturn(Optional.of(payment)).when(paymentRepository)
                 .findWithLockingByIdAndIsDeletedFalse(paymentId);
 
-        paymentService.complete(paymentId);
+        paymentService.completePayment(paymentId);
 
         assertEquals(PaymentStatus.COMPLETE, payment.getStatus());
         verify(paymentRepository).findWithLockingByIdAndIsDeletedFalse(paymentId);
@@ -141,13 +141,13 @@ class PaymentServiceImplTest {
 
     @Test
     @DisplayName("존재하지 않는 결제 ID가 주어졌을 때, 결제 상태 변경 시 ResourceNotFoundException 예외 발생")
-    void completePaymentWithInvalidIdTest() {
+    void completePaymentPaymentWithInvalidIdTest() {
 
         doReturn(Optional.empty()).when(paymentRepository)
                 .findWithLockingByIdAndIsDeletedFalse(paymentId);
 
         assertThrows(ResourceNotFoundException.class,
-                () -> paymentService.complete(paymentId));
+                () -> paymentService.completePayment(paymentId));
     }
 
     private static Payment getPayment() {

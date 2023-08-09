@@ -64,7 +64,7 @@ public class PaymentServiceImpl implements PaymentService {
 
     @Override
     @Transactional
-    public void complete(Long id) {
+    public void completePayment(Long id) {
 
         log.info("Attempting to change payment status with ID: {}", id);
 

@@ -112,7 +112,7 @@ class PaymentControllerTest {
     @DisplayName("유효한 결제 ID로 결제 상태 업데이트 API 호출 시 성공")
     void testPaymentCompleteSuccess() throws Exception {
 
-        doNothing().when(paymentService).complete(paymentId);
+        doNothing().when(paymentService).completePayment(paymentId);
 
         mockMvc.perform(put("/payments/" + paymentId + "/complete")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -124,7 +124,7 @@ class PaymentControllerTest {
     @DisplayName("존재하지 않는 결제 ID로 결제 상태 업데이트 API 호출 시 실패")
     void testPaymentCompleteFailure() throws Exception {
 
-        doThrow(ResourceNotFoundException.class).when(paymentService).complete(paymentId);
+        doThrow(ResourceNotFoundException.class).when(paymentService).completePayment(paymentId);
 
         mockMvc.perform(put("/payments/" + paymentId + "/complete")
                         .contentType(MediaType.APPLICATION_JSON))

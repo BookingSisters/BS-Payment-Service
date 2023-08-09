@@ -41,7 +41,7 @@ public class PaymentController {
     @PutMapping("/{id}/complete")
     @ResponseStatus(HttpStatus.OK)
     public CommonResponseDto paymentComplete(@PathVariable final Long id) {
-        paymentService.complete(id);
+        paymentService.completePayment(id);
         return new CommonResponseDto(HttpStatus.OK.toString(), "Payment status updated successfully");
     }
 }
